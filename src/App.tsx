@@ -1,18 +1,24 @@
+import { ToastContainer } from "react-toastify";
 import { PatientForm, PatientsList } from "./components";
+import "react-toastify/ReactToastify.css";
 
 function App() {
   return (
     <>
-      <div className="container mx-auto mt-20">
-        <h1 className="font-black text-center text-5xl md:w-2/3 md:mx-auto">
-          Veterinary Patients <span className="text-indigo-700">Manager</span>
-        </h1>
+      <div className="container mx-auto max-w-[1200px]">
+        <div className="mt-10">
+          <h1 className="text-5xl font-black text-center">
+            Veterinary Patients <span className="text-indigo-700">Manager</span>
+          </h1>
+        </div>
+
+        <div className="container grid items-center gap-5 mt-10 md:grid-cols-2">
+          <PatientForm />
+          <PatientsList />
+        </div>
       </div>
 
-      <div className="mt-12 md:flex">
-        <PatientForm />
-        <PatientsList />
-      </div>
+      <ToastContainer autoClose={2500} />
     </>
   );
 }

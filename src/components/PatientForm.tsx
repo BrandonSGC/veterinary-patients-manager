@@ -1,23 +1,48 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { Error } from "./Error";
-import { PatientDraft } from "../types";
+import { DraftPatient } from "../types";
+import { usePatientStore } from "../store";
 
 export const PatientForm = () => {
+  const { patients, activeId, addPatient, updatePatient } = usePatientStore();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<PatientDraft>();
+    setValue,
+    reset,
+  } = useForm<DraftPatient>();
 
-  const registerPatient = (data: PatientDraft) => {
-    console.log("Creating patient: ", data);
+  useEffect(() => {
+    if (activeId) {
+      const activePatient = patients.filter(
+        (patient) => patient.id === activeId
+      )[0];
+      setValue("name", activePatient.name);
+      setValue("caretaker", activePatient.caretaker);
+      setValue("email", activePatient.email);
+      setValue("date", activePatient.date);
+      setValue("symptoms", activePatient.symptoms);
+    }
+  }, [activeId]);
+
+  const registerPatient = (data: DraftPatient) => {
+    if (activeId) {
+      updatePatient(data);
+      toast.success("Patient updated successfully");
+    } else {
+      addPatient(data);
+      toast.success("Patient registered successfully");
+    }
+    reset();
   };
 
   return (
-    <div className="mx-5 md:w-1/2 lg:w-2/5">
+    <div className="md:h-screen">
       <h2 className="text-3xl font-black text-center">Patient Tracking</h2>
-
-      <p className="mt-5 mb-10 text-lg text-center">
+      <p className="mb-5 text-lg text-center">
         Add Patients and {""}
         <span className="font-bold text-indigo-600">Manage Them</span>
       </p>
@@ -33,7 +58,7 @@ export const PatientForm = () => {
           </label>
           <input
             id="name"
-            className="w-full p-3 border border-gray-100"
+            className="w-full p-3 border border-gray-200 rounded"
             type="text"
             placeholder="Patient name"
             {...register("name", {
@@ -49,7 +74,7 @@ export const PatientForm = () => {
           </label>
           <input
             id="caretaker"
-            className="w-full p-3 border border-gray-100"
+            className="w-full p-3 border border-gray-200 rounded"
             type="text"
             placeholder="Caretaker's name"
             {...register("caretaker", {
@@ -67,7 +92,7 @@ export const PatientForm = () => {
           </label>
           <input
             id="email"
-            className="w-full p-3 border border-gray-100"
+            className="w-full p-3 border border-gray-200 rounded"
             type="email"
             placeholder="Registration email"
             {...register("email", {
@@ -87,7 +112,7 @@ export const PatientForm = () => {
           </label>
           <input
             id="date"
-            className="w-full p-3 border border-gray-100"
+            className="w-full p-3 border border-gray-200 rounded"
             type="date"
             {...register("date", {
               required: "Discharge date is required",
@@ -102,7 +127,7 @@ export const PatientForm = () => {
           </label>
           <textarea
             id="symptoms"
-            className="w-full p-3 border border-gray-100"
+            className="w-full p-3 border border-gray-200 rounded"
             placeholder="Patient symptoms"
             {...register("symptoms", {
               required: "Symptoms are required",
@@ -115,8 +140,8 @@ export const PatientForm = () => {
 
         <input
           type="submit"
-          className="w-full p-3 font-bold text-white uppercase transition-colors bg-indigo-600 cursor-pointer hover:bg-indigo-700"
-          value="Save Patient"
+          className="w-full p-3 font-bold text-white uppercase transition-colors bg-indigo-600 rounded cursor-pointer hover:bg-indigo-700"
+          value={activeId ? "Edit Patient" : "Save Patient"}
         />
       </form>
     </div>
